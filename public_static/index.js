@@ -8,6 +8,7 @@ $(function () {
     var submit = $('#submit');
     var chat = $('#chat');
     var online = $('#online');
+    var onlineUsers = {};
 
     submit.click(function () {
         socket.emit('new_message', {
@@ -17,24 +18,27 @@ $(function () {
     });
 
 
-
     socket.on('get_msg', function (data) {
         console.log(data);
         chat.append(createMessage(data.username, data.new_msg))
     })
 
-    socket.on('prev', function(prev_msgs){
-        for (i of prev_msgs){
+    socket.on('prev', function (prev_msgs) {
+        for (i of prev_msgs) {
+
             chat.append(createMessage(i.username, i.msg));
 
         }
     });
 
     socket.on('users', function (users) {
-        for(i of users){
-            online.append(createOnlineList(i));
+        console.log(users);
+        online.html("");
+        online.append(`<li class="list-group-item active">Online People</li>`);
+        for (i in users) {
+            online.append(createOnlineList(users[i]));
         }
-    })
+    });
 
     var username = prompt("Who you ?");
 

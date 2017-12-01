@@ -9,11 +9,11 @@ const path = require('path');
 
 let prevData= [];
 app.use(express.static(path.join(__dirname, '/public_static')));
-let users = [];
+let users = {};
 io.on('connection', (socket) => {
     socket.on('user', (data)=>{
-       users.push(data);
-       socket.emit('users', users);
+       users[socket.id] = data;
+       io.emit('users', users);
     });
     console.log("Socket connected with socket id : " + socket.id);
     socket.emit('prev', prevData);
@@ -24,6 +24,11 @@ io.on('connection', (socket) => {
             new_msg: data.msg,
             username: data.username
         });
+    });
+
+    socket.on('disconnect', ()=>{
+        delete users[socket.id];
+        socket.emit('user')
     })
 
 });
