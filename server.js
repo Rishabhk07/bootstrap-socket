@@ -7,16 +7,25 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const path = require('path');
 
+let prevData= [];
 app.use(express.static(path.join(__dirname, '/public_static')));
-
+let users = [];
 io.on('connection', (socket) => {
+    socket.on('user', (data)=>{
+       users.push(data);
+       socket.emit('users', users);
+    });
     console.log("Socket connected with socket id : " + socket.id);
+    socket.emit('prev', prevData);
     socket.on('new_message', (data) =>{
+        prevData.push(data);
         console.log("message received : " + data.msg);
-        io.sockets.emit('get_msg', {
-            new_msg: data.msg
+        io.emit('get_msg', {
+            new_msg: data.msg,
+            username: data.username
         });
     })
+
 });
 
 app.get('/', (req, res) => {
