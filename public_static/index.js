@@ -2,7 +2,7 @@
  * Created by rishabhkhanna on 30/11/17.
  */
 var socket = io();
-
+var username;
 $(function () {
     var msg = $('#msg');
     var submit = $('#submit');
@@ -40,19 +40,29 @@ $(function () {
         }
     });
 
-    var username = prompt("Who you ?");
+    username = prompt("Who you ?");
 
     socket.emit('user', username);
 
 });
 
 function createMessage(user, msg) {
-    var msg = `<div class="list-group-item">
+    if(user == username){
+        var msg = `<div class="list-group-item">
                     <div class="d-flex w-40 justify-content-between">
                         <h5 class="username">${user}</h5>
                     </div>
                     <p class="message">${msg}</p>
                 </div>`;
+    }else{
+        var msg = `<div class="list-group-item">
+                    <div class="d-flex w-40 justify-content-between">
+                        <h5 class="username">${user}</h5>
+                    </div>
+                    <p class="message">${msg}</p>
+                </div>`;
+    }
+
     return msg;
 }
 
